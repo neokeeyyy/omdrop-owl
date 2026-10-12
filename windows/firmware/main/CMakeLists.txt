@@ -1,0 +1,9 @@
+idf_component_register(
+  SRCS
+    "app_main.c"
+    "../../protocol/radio_protocol.c"
+    "../../protocol/radio_messages.c"
+  INCLUDE_DIRS
+    "."
+    "../../protocol"
+)

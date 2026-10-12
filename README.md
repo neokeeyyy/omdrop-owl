@@ -7,6 +7,15 @@ chip. Pairs with [omdrop](https://github.com/brentkearney/omdrop-plugin).
 
 See [supported hardware](#supported-hardware).
 
+The discoverability helper contract shared by radio backends is documented in
+[`docs/radio-backend.md`](docs/radio-backend.md).
+
+The proposed Windows backend scope and acceptance criteria are documented in
+[`docs/windows-backend.md`](docs/windows-backend.md).
+
+The ESP32-S3 reference firmware and its QEMU workflow are documented in
+[`windows/firmware/README.md`](windows/firmware/README.md).
+
 ## Install
 
 Install this package (omdrop-owl) first, then [omdrop](https://github.com/brentkearney/omdrop-plugin).
