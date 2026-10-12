@@ -11,7 +11,7 @@ It responds to `HELLO`, `SET_CHANNEL`, `START_RX`, `STOP_RX`, `SET_MAC`, and
 Build and test it with:
 
 ```powershell
-cmake -S windows/fake-radio -B build/windows-fake-radio -G Ninja -DCMAKE_C_COMPILER=gcc
-cmake --build build/windows-fake-radio
-ctest --test-dir build/windows-fake-radio --output-on-failure
+cmake -S windows -B build/windows -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/windows --target fake_radio_test
+ctest --test-dir build/windows -R fake_radio_test --output-on-failure
 ```

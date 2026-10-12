@@ -1,9 +1,17 @@
+param(
+  [string]$Binary = ''
+)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-$binary = Join-Path $repo 'build\windows-backend\omdrop-windows-backend.exe'
+if ([string]::IsNullOrWhiteSpace($Binary)) {
+  $Binary = Join-Path $repo 'build\windows\backend\omdrop-windows-backend.exe'
+}
 $state = Join-Path $env:TEMP 'omdrop-windows-backend-test.state'
+$stop = Join-Path $env:TEMP 'omdrop-windows-backend-test.stop'
 Remove-Item $state -ErrorAction SilentlyContinue
+Remove-Item $stop -ErrorAction SilentlyContinue
 $env:OMDROP_WINDOWS_STATE = $state
+$env:OMDROP_WINDOWS_STOP = $stop
 $env:OMDROP_WINDOWS_SIMULATED = '1'
 
 & $binary probe --json | ConvertFrom-Json | ForEach-Object {
@@ -22,3 +30,4 @@ if ($LASTEXITCODE -ne 0) { throw 'stop failed' }
 $status = & $binary status --json | ConvertFrom-Json
 if ($status.visible) { throw 'stop status mismatch' }
 Remove-Item $state -ErrorAction SilentlyContinue
+Remove-Item $stop -ErrorAction SilentlyContinue

@@ -44,24 +44,6 @@ endif()
 target_link_libraries(owl-awdl-core PUBLIC owl-radiotap)
 target_compile_features(owl-awdl-core PUBLIC c_std_99)
 
-add_library(omdrop-radio-protocol STATIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/../protocol/radio_protocol.c"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../protocol/radio_messages.c"
-)
-target_include_directories(omdrop-radio-protocol PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/../protocol"
-)
-target_compile_features(omdrop-radio-protocol PUBLIC c_std_99)
-
-add_library(omdrop-radio-transport STATIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/../transport/serial_transport.c"
-)
-target_include_directories(omdrop-radio-transport PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/../transport"
-)
-target_link_libraries(omdrop-radio-transport PUBLIC omdrop-radio-protocol)
-target_compile_features(omdrop-radio-transport PUBLIC c_std_99)
-
 add_library(omdrop-radio-link STATIC radio_link.c)
 target_include_directories(omdrop-radio-link PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -133,24 +115,24 @@ if(BUILD_TESTING)
   target_link_libraries(radio_adapter_test PRIVATE omdrop-radio-adapter)
   add_test(NAME radio_adapter_test COMMAND radio_adapter_test)
 
-  add_executable(radio_session_test radio_session_test.c
-    "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio/fake_radio.c")
-  target_include_directories(radio_session_test PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio")
-  target_link_libraries(radio_session_test PRIVATE omdrop-radio-session)
+  add_executable(radio_session_test radio_session_test.c)
+  target_link_libraries(radio_session_test PRIVATE
+    omdrop-radio-session
+    omdrop-fake-radio
+  )
   add_test(NAME radio_session_test COMMAND radio_session_test)
 
-  add_executable(radio_loop_test radio_loop_test.c
-    "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio/fake_radio.c")
-  target_include_directories(radio_loop_test PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio")
-  target_link_libraries(radio_loop_test PRIVATE omdrop-radio-loop)
+  add_executable(radio_loop_test radio_loop_test.c)
+  target_link_libraries(radio_loop_test PRIVATE
+    omdrop-radio-loop
+    omdrop-fake-radio
+  )
   add_test(NAME radio_loop_test COMMAND radio_loop_test)
 
-  add_executable(radio_runtime_test radio_runtime_test.c
-    "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio/fake_radio.c")
-  target_include_directories(radio_runtime_test PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio")
-  target_link_libraries(radio_runtime_test PRIVATE omdrop-radio-runtime)
+  add_executable(radio_runtime_test radio_runtime_test.c)
+  target_link_libraries(radio_runtime_test PRIVATE
+    omdrop-radio-runtime
+    omdrop-fake-radio
+  )
   add_test(NAME radio_runtime_test COMMAND radio_runtime_test)
 endif()

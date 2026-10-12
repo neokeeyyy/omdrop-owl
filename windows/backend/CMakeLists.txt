@@ -8,27 +8,41 @@ target_include_directories(omdrop-windows-backend-state PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_features(omdrop-windows-backend-state PUBLIC c_std_99)
 
-add_library(omdrop-windows-backend-radio STATIC backend_radio.c
-  "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio/fake_radio.c"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../protocol/radio_protocol.c"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../protocol/radio_messages.c"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../transport/serial_transport.c"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../owl/radio_link.c"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../owl/radio_session.c"
-)
+add_library(omdrop-windows-backend-radio STATIC backend_radio.c)
 target_include_directories(omdrop-windows-backend-radio PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../fake-radio"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../fake_radio"
   "${CMAKE_CURRENT_SOURCE_DIR}/../owl"
   "${CMAKE_CURRENT_SOURCE_DIR}/../protocol"
   "${CMAKE_CURRENT_SOURCE_DIR}/../transport"
 )
+target_link_libraries(omdrop-windows-backend-radio PUBLIC
+  omdrop-fake-radio
+  omdrop-radio-session
+)
 target_compile_features(omdrop-windows-backend-radio PUBLIC c_std_99)
+
+add_library(omdrop-windows-backend-worker STATIC backend_worker.c)
+target_include_directories(omdrop-windows-backend-worker PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(omdrop-windows-backend-worker PUBLIC
+  omdrop-windows-backend-radio
+  omdrop-windows-backend-state)
+target_compile_features(omdrop-windows-backend-worker PUBLIC c_std_99)
+
+add_library(omdrop-windows-backend-output STATIC backend_output.c)
+target_include_directories(omdrop-windows-backend-output PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(omdrop-windows-backend-output PUBLIC
+  omdrop-windows-backend-state)
+target_compile_features(omdrop-windows-backend-output PUBLIC c_std_99)
 
 add_executable(omdrop-windows-backend backend_cli.c)
 target_link_libraries(omdrop-windows-backend PRIVATE
   omdrop-windows-backend-state
-  omdrop-windows-backend-radio)
+  omdrop-windows-backend-radio
+  omdrop-windows-backend-worker
+  omdrop-windows-backend-output)
 
 if(BUILD_TESTING)
   add_executable(backend_state_test backend_state_test.c)
@@ -40,6 +54,7 @@ if(BUILD_TESTING)
   if(WIN32)
     add_test(NAME backend_cli_test
       COMMAND powershell -NoProfile -ExecutionPolicy Bypass
-      -File "${CMAKE_CURRENT_SOURCE_DIR}/backend_cli_test.ps1")
+      -File "${CMAKE_CURRENT_SOURCE_DIR}/backend_cli_test.ps1"
+      -Binary "$<TARGET_FILE:omdrop-windows-backend>")
   endif()
 endif()

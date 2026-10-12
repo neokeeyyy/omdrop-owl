@@ -22,3 +22,18 @@ expiry timer and exits on `stop`. The persisted state includes the worker
 process identifier for diagnostics. The current worker owns the radio
 transport and lifecycle; the OWL/Ethernet runtime is the next integration
 boundary and remains independently testable through its existing adapters.
+
+## Build and test
+
+Configure the complete Windows host tree from the repository root:
+
+```powershell
+cmake -S windows -B build/windows -G Ninja -DBUILD_TESTING=ON
+cmake --build build/windows
+ctest --test-dir build/windows --output-on-failure
+```
+
+`windows/firmware` is an independent ESP-IDF project and is not included by
+the host CMake build. The root Windows build composes protocol, transport,
+fake-radio, Ethernet, OWL, and backend targets without compiling their source
+files more than once.
